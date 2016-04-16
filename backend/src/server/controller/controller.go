@@ -5,6 +5,13 @@ import (
 )
 
 type Controller struct {
+	chathub *ChatHub
+}
+
+func NewController() (c *Controller) {
+	c = new(Controller)
+	c.chathub = NewChatHub()
+	return c
 }
 
 type Binder interface {

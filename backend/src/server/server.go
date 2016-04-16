@@ -19,7 +19,7 @@ func (s *Server) Run() error {
 }
 
 func (s *Server) startServer() {
-	ctrl := &controller.Controller{}
+	ctrl := controller.NewController()
 
 	r := gin.Default()
 
@@ -37,10 +37,14 @@ func (s *Server) startServer() {
 
 	api(&r.RouterGroup, "/login", ctrl.Login)
 	api(&r.RouterGroup, "/events", ctrl.GetEvents)
-	r.GET("/ws_chat", func(c *gin.Context) {
-		handler := websocket.Handler(ctrl.ChatWS)
-		handler.ServeHTTP(c.Writer, c.Request)
-	})
+	room := r.Group("/room/:room_id")
+	{
+		room.GET("/ws_chat", func(c *gin.Context) {
+			room_id := c.Param("room_id")
+			handler := websocket.Handler(ctrl.StartChatWS(room_id))
+			handler.ServeHTTP(c.Writer, c.Request)
+		})
+	}
 	endless.ListenAndServe(":19888", r)
 }
 
