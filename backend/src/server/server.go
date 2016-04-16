@@ -4,6 +4,9 @@ import (
 	"net/http"
 	"server/controller"
 
+	"golang.org/x/net/websocket"
+
+	"github.com/fvbock/endless"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,7 +19,7 @@ func (s *Server) Run() error {
 }
 
 func (s *Server) startServer() {
-	c := &controller.Controller{}
+	ctrl := &controller.Controller{}
 
 	r := gin.Default()
 
@@ -32,10 +35,13 @@ func (s *Server) startServer() {
 		})
 	})
 
-	api(&r.RouterGroup, "/login", c.Login)
-	api(&r.RouterGroup, "/events", c.GetEvents)
-
-	r.Run(":19888")
+	api(&r.RouterGroup, "/login", ctrl.Login)
+	api(&r.RouterGroup, "/events", ctrl.GetEvents)
+	r.GET("/ws_chat", func(c *gin.Context) {
+		handler := websocket.Handler(ctrl.ChatWS)
+		handler.ServeHTTP(c.Writer, c.Request)
+	})
+	endless.ListenAndServe(":19888", r)
 }
 
 func (s *Server) Stop() {
