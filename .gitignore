@@ -1,6 +1,9 @@
 
 # Created by https://www.gitignore.io/api/go,sublimetext,android
 
+backend/logs
+backend/pids
+
 ### Go ###
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
@@ -39,7 +42,7 @@ _testmain.go
 
 # project files should be checked into the repository, unless a significant
 # proportion of contributors will probably not be using SublimeText
-# *.sublime-project
+*.sublime-project
 
 # sftp configuration file
 sftp-config.json
