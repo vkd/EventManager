@@ -4,8 +4,8 @@ cd src/EventManager
 go install
 cd ../..
 
-if [ -e EventManager.pid ]; then
-    kill $(cat EventManager.pid)
+if [ -e pids/EventManager.pid ]; then
+    kill $(cat pids/EventManager.pid)
 fi
 
 bin/EventManager
