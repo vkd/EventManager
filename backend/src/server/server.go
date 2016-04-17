@@ -1,11 +1,16 @@
 package server
 
 import (
+	"fmt"
+	"io/ioutil"
 	"net/http"
+	"os"
+	"path"
 	"server/controller"
 
 	"golang.org/x/net/websocket"
 
+	qr "github.com/RaymondChou/goqr/pkg"
 	"github.com/fvbock/endless"
 	"github.com/gin-gonic/gin"
 )
@@ -56,6 +61,24 @@ func (s *Server) startServer() {
 			// handler.ServeHTTP(c.Writer, c.Request)
 		})
 	}
+	r.GET("/qr/:value", func(c *gin.Context) {
+		value := c.Param("value")
+		filename := path.Join("qr", value)
+		_, err := os.Stat(filename)
+		if os.IsNotExist(err) {
+			os.Mkdir("qr", 0777)
+			co, err := qr.Encode(value, qr.L)
+
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			pngdat := co.PNG()
+			ioutil.WriteFile(filename, pngdat, 0666)
+		}
+		c.File(filename)
+	})
+
 	endless.ListenAndServe(":19888", r)
 }
 
