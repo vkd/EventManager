@@ -41,8 +41,10 @@ func (s *Server) startServer() {
 	{
 		room.GET("/ws_chat", func(c *gin.Context) {
 			room_id := c.Param("room_id")
-			handler := websocket.Handler(ctrl.StartChatWS(room_id))
-			handler.ServeHTTP(c.Writer, c.Request)
+			s := websocket.Server{Handler: websocket.Handler(ctrl.StartChatWS(room_id))}
+			s.ServeHTTP(c.Writer, c.Request)
+			// handler := websocket.Handler(ctrl.StartChatWS(room_id))
+			// handler.ServeHTTP(c.Writer, c.Request)
 		})
 	}
 	endless.ListenAndServe(":19888", r)
