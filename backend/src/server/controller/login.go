@@ -9,6 +9,17 @@ type json_login struct {
 	Pass  string `json:"pass" binding:"required"`
 }
 
+var (
+	db_users = []struct {
+		Login string
+		Pass  string
+	}{
+		{"admin", "admin"},
+		{"user", "user"},
+		{"guest", "guest"},
+	}
+)
+
 func (c *Controller) Login(b Binder) (int, *R) {
 	var json json_login
 	err := b.BindJSON(&json)
@@ -16,7 +27,15 @@ func (c *Controller) Login(b Binder) (int, *R) {
 		return errorJson(err)
 	}
 
-	if json.Email != "admin" || json.Pass != "admin" {
+	is_exists := false
+	for _, u := range db_users {
+		if u.Login == json.Email && u.Pass == json.Pass {
+			is_exists = true
+			break
+		}
+	}
+
+	if !is_exists {
 		return http.StatusUnauthorized, &R{
 			"status":    "error",
 			"error_msg": "Wrong password",
