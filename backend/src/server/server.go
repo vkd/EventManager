@@ -41,7 +41,16 @@ func (s *Server) startServer() {
 	{
 		room.GET("/ws_chat", func(c *gin.Context) {
 			room_id := c.Param("room_id")
-			s := websocket.Server{Handler: websocket.Handler(ctrl.StartChatWS(room_id))}
+			s := websocket.Server{
+				Handler: websocket.Handler(ctrl.StartChatWS(room_id)),
+				Config: websocket.Config{
+					Header: http.Header{
+						"Access-Control-Allow-Credentials": []string{"true"},
+						"Access-Control-Allow-Headers":     []string{"x-websocket-protocol", "x-websocket-version", "x-websocket-extensions", "content-type", "authorization"},
+						"Access-Control-Allow-Origin":      []string{"http://176.112.197.64"},
+					},
+				},
+			}
 			s.ServeHTTP(c.Writer, c.Request)
 			// handler := websocket.Handler(ctrl.StartChatWS(room_id))
 			// handler.ServeHTTP(c.Writer, c.Request)
