@@ -65,7 +65,7 @@ func main() {
 		}
 
 		// time.Sleep(3 * time.Second)
-		_, err = ws.Write(line)
+		_, err = ws.Write([]byte(`{"author":"system", "message":"` + string(line) + `"}`))
 		if err != nil {
 			log.Fatal(err)
 		}
